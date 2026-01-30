@@ -256,7 +256,7 @@ Basit bir envanter sistemi (String ID tabanlı) kuruldu ve kapı/anahtar etkile�
 
 ### LLM Kullanımı Hakkında Düşüncelerim
 
-Bu case çalışmasında LLM, bir "Kod Yazarı"ndan ziyade bir "Asistan" olarak rol aldı. Temel angarya işleri ona yaptırarak, ben daha çok mimari kararlara, optimizasyona ve kodun genel kalitesine (Refactoring) odaklanabildim. LLM olmasaydı bu standartlarda bir projeyi bu sürede bitirmek çok daha zor olurdu.
+Bu case çalışmasında LLM, bir "Kod Yazarı"ndan ziyade bir "Asistan" olarak rol aldı. Temel angarya işleri ona yaptırarak, ben daha çok mimari kararlara, optimizasyona ve kodun genel kalitesine (Refactoring) odaklanabildim.
 
 ---
 
