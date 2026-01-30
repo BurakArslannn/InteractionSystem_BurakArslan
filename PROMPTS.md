@@ -190,3 +190,31 @@
 
 **Açıklama:**
 > Player objesine Inventory scriptini ekledim ve sahneye "RedKey" ID'li bir anahtar objesi yerleştirdim.
+
+
+---
+
+## 🛠️ Phase 2: Manual Refactoring & Optimization (The "Engineering" Polish)
+
+**Description:**
+While AI provided the core logic and rapid prototyping, I performed manual refactoring to align the codebase with modern architecture standards (SOLID), improve performance, and ensure scalability.
+
+**Key Modifications & Engineering Decisions:**
+
+1.  **Dependency Injection & Architecture Fix:**
+    * *Issue:* AI-generated scripts (e.g., `DoorInteractable`) relied on `FindObjectOfType` to locate the player's Inventory, which is expensive (O(n)) and prone to runtime errors.
+    * *Solution:* I refactored the `IInteractable` interface to include `void Interact(GameObject interactor)`. This allows direct dependency injection of the player reference, eliminating expensive scene traversals.
+
+2.  **Observer Pattern Implementation:**
+    * *Issue:* Tight coupling between Interactable objects and the UI system.
+    * *Solution:* Decoupled the systems. Interactables now report feedback via the `InteractionDetector` events (`OnInteractionFeedback`). The UI listens to these events passively, adhering to the Single Responsibility Principle.
+
+3.  **UniTask Integration (Async/Await):**
+    * *Issue:* Standard Coroutines generate garbage (GC allocation) and are harder to manage for linear async logic.
+    * *Solution:* Manually integrated `UniTask` into `KeyInteractable` and `SimpleInteractable`. Added "Fake Latency" to simulate backend synchronization. Crucially, I implemented `GetCancellationTokenOnDestroy()` to prevent `MissingReferenceException` if objects are destroyed during async operations.
+
+4.  **Performance Optimization:**
+    * *Caching:* Cached `GetComponent` calls (e.g., Renderer, Inventory) in `Start()` methods to avoid runtime overhead.
+    * *Code Analysis:* Addressed Rider/ReSharper performance warnings, specifically optimizing hot paths in the interaction logic.
+
+---

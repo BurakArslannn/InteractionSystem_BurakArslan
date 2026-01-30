@@ -1,41 +1,37 @@
 using InteractionSystem.Scripts.Runtime.Player;
 using UnityEngine;
+using Cysharp.Threading.Tasks;
 
 namespace InteractionSystem.Scripts.Runtime.Interactables
 {
     /// <summary>
-    /// Represents a key that can be picked up and added to the player's inventory.
+    /// A collectible item that grants access permissions.
+    /// Uses UniTask to handle asynchronous pickup logic (simulating delay/effects) before adding the key to the Inventory.
     /// </summary>
     public class KeyInteractable : InteractableBase
     {
-        #region Fields
+        #region Self Variables
 
-        [Header("Key Settings")]
-        [Tooltip("The unique ID for this key (e.g., 'RedKey'). This must match the Door's KeyID.")]
-        [SerializeField]
+        [Header("Key Settings")] [SerializeField]
         private string m_KeyID;
 
         #endregion
 
         #region Methods
 
-        protected override void OnInteract()
+        protected override async void OnInteract(GameObject interactor)
         {
-            var inventory = FindObjectOfType<Inventory>();
-
-            if (inventory != null)
+            if (interactor.TryGetComponent(out Inventory inventory))
             {
+                if (TryGetComponent(out Collider col)) col.enabled = false;
+                if (TryGetComponent(out Renderer rend)) rend.enabled = false;
+
+                SendFeedback(interactor, $"Picked up: {m_KeyID}", false);
+
+                await UniTask.Delay(100, cancellationToken: this.GetCancellationTokenOnDestroy());
+
                 inventory.AddKey(m_KeyID);
-
-                // Visual feedback (Optional: Play sound here)
-                Debug.Log($"[Key] Collected {m_KeyID}");
-
-                // Destroy the object
                 Destroy(gameObject);
-            }
-            else
-            {
-                Debug.LogError("[KeyInteractable] No Inventory found in scene!");
             }
         }
 

@@ -3,64 +3,51 @@ using InteractionSystem.Scripts.Runtime.Player;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
-// DOTween namespace
-
-// InteractionDetector'a erişim için
+using Cysharp.Threading.Tasks; // Async beklemeler için
 
 namespace InteractionSystem.Scripts.Runtime.UI
 {
     /// <summary>
-    /// Manages the Interaction UI feedback using DOTween for animations.
-    /// Listens to events from the InteractionDetector.
+    /// Manages the Heads-Up Display (HUD) feedback using the Observer Pattern.
+    /// Listens to InteractionDetector events to trigger DOTween animations for Prompts, Progress Bars, and Status Messages.
     /// </summary>
     public class InteractionUI : MonoBehaviour
     {
         #region Fields
 
-        [Header("UI References")]
-        [Tooltip("The text component displaying the interaction prompt (e.g., 'Press E').")]
-        [SerializeField]
+        [Header("UI References")] [SerializeField]
         private TextMeshProUGUI m_PromptText;
 
-        [Tooltip("The progress bar image (filled type) for hold interactions.")] [SerializeField]
-        private Image m_ProgressBar;
+        [SerializeField] private Image m_ProgressBar;
+        [SerializeField] private CanvasGroup m_CanvasGroup;
 
-        [Tooltip("CanvasGroup for fading the UI in/out.")] [SerializeField]
-        private CanvasGroup m_CanvasGroup;
+        [Header("Feedback Colors")] [SerializeField]
+        private Color m_NormalColor = Color.white;
 
-        [Header("System References")]
-        [Tooltip("Reference to the player's InteractionDetector script.")]
-        [SerializeField]
-        private InteractionDetector m_Detector;
+        [SerializeField] private Color m_ErrorColor = Color.red;
+        [SerializeField] private Color m_SuccessColor = Color.green;
+
+        [Header("System")] [SerializeField] private InteractionDetector m_Detector;
+
+        private bool m_IsShowingFeedback;
 
         #endregion
 
-        #region Unity Methods
+        #region Setup
 
         private void Start()
         {
-            if (m_Detector == null)
+            if (m_Detector == null) m_Detector = FindFirstObjectByType<InteractionDetector>();
+
+            // Event Subscription (Observer Pattern)
+            if (m_Detector != null)
             {
-                m_Detector = FindObjectOfType<InteractionDetector>();
-                if (m_Detector == null)
-                {
-                    Debug.LogError("[InteractionUI] InteractionDetector not found in scene!");
-                    return;
-                }
+                m_Detector.OnInteractableFound += HandleInteractableFound;
+                m_Detector.OnHoldProgress += HandleHoldProgress;
+                m_Detector.OnInteractionFeedback += HandleFeedback;
             }
 
-            m_Detector.OnInteractableFound += HandleInteractableFound;
-            m_Detector.OnHoldProgress += HandleHoldProgress;
-
-            if (m_CanvasGroup != null)
-            {
-                m_CanvasGroup.alpha = 0f;
-            }
-
-            if (m_ProgressBar != null)
-            {
-                m_ProgressBar.fillAmount = 0f;
-            }
+            InitUI();
         }
 
         private void OnDestroy()
@@ -69,7 +56,15 @@ namespace InteractionSystem.Scripts.Runtime.UI
             {
                 m_Detector.OnInteractableFound -= HandleInteractableFound;
                 m_Detector.OnHoldProgress -= HandleHoldProgress;
+                m_Detector.OnInteractionFeedback -= HandleFeedback;
             }
+        }
+
+        private void InitUI()
+        {
+            if (m_CanvasGroup) m_CanvasGroup.alpha = 0f;
+            if (m_ProgressBar) m_ProgressBar.fillAmount = 0f;
+            if (m_PromptText) m_PromptText.color = m_NormalColor;
         }
 
         #endregion
@@ -78,14 +73,15 @@ namespace InteractionSystem.Scripts.Runtime.UI
 
         private void HandleInteractableFound(bool isFound, string promptText)
         {
-            if (m_CanvasGroup == null) return;
+            if (m_IsShowingFeedback) return;
 
+            if (m_CanvasGroup == null) return;
             m_CanvasGroup.DOKill();
 
             if (isFound)
             {
-                if (m_PromptText != null) m_PromptText.text = promptText;
-
+                m_PromptText.text = promptText;
+                m_PromptText.color = m_NormalColor;
                 m_CanvasGroup.DOFade(1f, 0.2f);
             }
             else
@@ -96,9 +92,34 @@ namespace InteractionSystem.Scripts.Runtime.UI
 
         private void HandleHoldProgress(float progress)
         {
-            if (m_ProgressBar != null)
+            if (m_ProgressBar) m_ProgressBar.fillAmount = progress;
+        }
+
+        private async void HandleFeedback(string message, bool isError)
+        {
+            m_IsShowingFeedback = true;
+
+            m_CanvasGroup.alpha = 1f;
+            m_PromptText.text = message;
+            m_PromptText.color = isError ? m_ErrorColor : m_SuccessColor;
+
+            if (isError)
             {
-                m_ProgressBar.fillAmount = progress;
+                m_PromptText.transform.DOShakePosition(0.5f, 10f);
+            }
+            else
+            {
+                m_PromptText.transform.DOPunchScale(Vector3.one * 0.2f, 0.3f);
+            }
+
+            await UniTask.Delay(1500, cancellationToken: this.GetCancellationTokenOnDestroy());
+
+            m_IsShowingFeedback = false;
+            m_PromptText.color = m_NormalColor;
+
+            if (m_CanvasGroup.alpha > 0.9f && !m_IsShowingFeedback)
+            {
+                m_CanvasGroup.DOFade(0f, 0.5f);
             }
         }
 

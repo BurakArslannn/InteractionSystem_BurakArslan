@@ -3,23 +3,13 @@ using UnityEngine;
 namespace InteractionSystem.Scripts.Runtime.Core
 {
     /// <summary>
-    /// Interface that must be implemented by any object that the player can interact with.
+    /// The core contract that defines the essential behavior for any object the player can interact with.
+    /// Acts as a bridge between the InteractionDetector and concrete objects (like Doors or Chests).
     /// </summary>
     public interface IInteractable
     {
-        /// <summary>
-        /// Gets the prompt text to be displayed on the UI.
-        /// </summary>
         string InteractionPrompt { get; }
-
-        /// <summary>
-        /// Gets the hold duration required for interaction (0 for instant).
-        /// </summary>
-        float GetHoldDuration(); // <--- BU SATIRI EKLEDİK
-
-        /// <summary>
-        /// Triggered when the player performs an interaction.
-        /// </summary>
+        float GetHoldDuration();
         void Interact(GameObject interactor);
     }
 }

@@ -4,7 +4,8 @@ using UnityEngine;
 namespace InteractionSystem.Scripts.Runtime.Player
 {
     /// <summary>
-    /// Simple inventory system to hold keys and other items.
+    /// A lightweight data container component for the Player.
+    /// Stores a list of collected Key IDs to determine access rights for locked interactables.
     /// </summary>
     public class Inventory : MonoBehaviour
     {
@@ -17,24 +18,14 @@ namespace InteractionSystem.Scripts.Runtime.Player
 
         #region Public Methods
 
-        /// <summary>
-        /// Adds a key to the inventory.
-        /// </summary>
-        /// <param name="keyID">The unique ID of the key.</param>
         public void AddKey(string keyID)
         {
             if (!m_Keys.Contains(keyID))
             {
                 m_Keys.Add(keyID);
-                Debug.Log($"[Inventory] Picked up key: {keyID}");
             }
         }
 
-        /// <summary>
-        /// Checks if the inventory contains a specific key.
-        /// </summary>
-        /// <param name="keyID">The ID of the key to check.</param>
-        /// <returns>True if the key is in inventory.</returns>
         public bool HasKey(string keyID)
         {
             return m_Keys.Contains(keyID);

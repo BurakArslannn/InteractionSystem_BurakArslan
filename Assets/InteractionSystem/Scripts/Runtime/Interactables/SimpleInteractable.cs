@@ -1,20 +1,22 @@
 using UnityEngine;
+using Cysharp.Threading.Tasks;
 
 namespace InteractionSystem.Scripts.Runtime.Interactables
 {
     /// <summary>
-    /// A simple interactable object that is destroyed when interacted with (e.g., a collectible item).
+    /// A basic one-time use object.
+    /// Demonstrates safe asynchronous destruction using UniTask and CancellationTokens.
     /// </summary>
     public class SimpleInteractable : InteractableBase
     {
-        #region Methods
-
-        protected override void OnInteract()
+        protected override async void OnInteract(GameObject interactor)
         {
-            Debug.Log($"Interacted with simple object: {gameObject.name}");
+            if (TryGetComponent(out Collider col)) col.enabled = false;
+
+            SendFeedback(interactor, "Item Collected!", false);
+
+            await UniTask.Delay(100, cancellationToken: this.GetCancellationTokenOnDestroy());
             Destroy(gameObject);
         }
-
-        #endregion
     }
 }

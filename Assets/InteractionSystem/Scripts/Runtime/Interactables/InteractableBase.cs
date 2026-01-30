@@ -1,60 +1,39 @@
 using InteractionSystem.Scripts.Runtime.Core;
+using InteractionSystem.Scripts.Runtime.Player; // Detector erişimi için
 using UnityEngine;
 
 namespace InteractionSystem.Scripts.Runtime.Interactables
 {
     /// <summary>
-    /// Base class for all interactable objects. Handles common logic like prompts and interface implementation.
+    /// Abstract base class implementing common IInteractable logic.
+    /// Handles interaction prompts and provides helper methods for sending UI feedback (Success/Error messages).
     /// </summary>
     public abstract class InteractableBase : MonoBehaviour, IInteractable
     {
-        #region Fields
+        #region Self Variables
 
-        [Tooltip("The text that will appear on the UI when the player looks at this object.")] [SerializeField]
-        private string m_Prompt = "Interact";
-
-        #endregion
-
-        #region Properties
-
-        /// <summary>
-        /// Gets the interaction prompt text.
-        /// </summary>
+        [SerializeField] private string m_Prompt = "Interact";
         public string InteractionPrompt => m_Prompt;
-
-        #endregion
-
-        #region Interface Implementations
-
-        /// <summary>
-        /// Explicit implementation of the IInteractable interface.
-        /// Calls the abstract OnInteract method.
-        /// </summary>
-        /// <param name="interactor">The GameObject initiating the interaction.</param>
-        void IInteractable.Interact(GameObject interactor)
-        {
-            OnInteract();
-        }
 
         #endregion
 
         #region Methods
 
-        /// <summary>
-        /// Returns the duration required to hold the interaction key.
-        /// Default is 0 (Instant interaction). Override this for Hold interactions.
-        /// </summary>
-        /// <returns>Duration in seconds.</returns>
-        public virtual float GetHoldDuration()
+        void IInteractable.Interact(GameObject interactor)
         {
-            return 0f;
+            OnInteract(interactor);
         }
 
-        /// <summary>
-        /// Called when the player interacts with this object.
-        /// Must be implemented by derived classes.
-        /// </summary>
-        protected abstract void OnInteract();
+        public virtual float GetHoldDuration() => 0f;
+        protected abstract void OnInteract(GameObject interactor);
+
+        protected void SendFeedback(GameObject interactor, string message, bool isError = false)
+        {
+            if (interactor.TryGetComponent(out InteractionDetector detector))
+            {
+                detector.ReportFeedback(message, isError);
+            }
+        }
 
         #endregion
     }

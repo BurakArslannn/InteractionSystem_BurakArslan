@@ -3,45 +3,37 @@ using UnityEngine;
 namespace InteractionSystem.Scripts.Runtime.Interactables
 {
     /// <summary>
-    /// Represents a chest that requires a hold interaction to open.
+    /// Represents a container that requires a 'Hold' interaction to open.
+    /// caches the Renderer component for optimized material color changes upon interaction.
     /// </summary>
     public class ChestInteractable : InteractableBase
     {
-        #region Fields
+        #region Self
 
-        [Header("Chest Settings")] [Tooltip("Time in seconds required to hold the interaction key.")] [SerializeField]
-        private float m_HoldDuration = 3.0f;
-
-        [Tooltip("Has the chest been opened already?")] [SerializeField]
-        private bool m_IsOpened;
+        [SerializeField] private float m_HoldDuration = 3.0f;
+        [SerializeField] private bool m_IsOpened;
+        private Renderer m_Renderer;
 
         #endregion
 
         #region Methods
 
-        /// <summary>
-        /// Returns the configured hold duration for this chest.
-        /// </summary>
-        public override float GetHoldDuration()
-        {
-            return m_HoldDuration;
-        }
+        private void Start() => m_Renderer = GetComponent<Renderer>();
 
-        protected override void OnInteract()
+        public override float GetHoldDuration() => m_HoldDuration;
+
+        protected override void OnInteract(GameObject interactor)
         {
             if (m_IsOpened)
             {
-                Debug.Log("[Chest] Already empty.");
+                SendFeedback(interactor, "Already Empty", true);
                 return;
             }
 
             m_IsOpened = true;
-            Debug.Log("[Chest] Opened! You found an item.");
+            if (m_Renderer) m_Renderer.material.color = Color.gray;
 
-            if (TryGetComponent(out Renderer renderer))
-            {
-                renderer.material.color = Color.gray;
-            }
+            SendFeedback(interactor, "Chest Opened!", false);
         }
 
         #endregion

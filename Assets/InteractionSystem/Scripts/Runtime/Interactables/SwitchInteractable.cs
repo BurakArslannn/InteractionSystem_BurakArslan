@@ -3,27 +3,18 @@ using UnityEngine;
 namespace InteractionSystem.Scripts.Runtime.Interactables
 {
     /// <summary>
-    /// An interactable object that toggles between two states (On/Off).
+    /// A simple toggleable object that switches between ON/OFF states and reports its status via the UI feedback system.
     /// </summary>
     public class SwitchInteractable : InteractableBase
     {
-        #region Fields
+        [SerializeField] private bool m_IsOn;
 
-        [Tooltip("Current state of the switch.")] [SerializeField]
-        private bool m_IsOn;
-
-        #endregion
-
-        #region Methods
-
-        protected override void OnInteract()
+        protected override void OnInteract(GameObject interactor)
         {
             m_IsOn = !m_IsOn;
+            
             string status = m_IsOn ? "ON" : "OFF";
-
-            Debug.Log($"Switch {gameObject.name} is now {status}");
+            SendFeedback(interactor, $"Switch is {status}", false);
         }
-
-        #endregion
     }
 }

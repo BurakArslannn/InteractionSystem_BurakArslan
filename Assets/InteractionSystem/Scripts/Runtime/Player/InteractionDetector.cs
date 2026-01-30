@@ -1,50 +1,35 @@
 using System;
 using InteractionSystem.Scripts.Runtime.Core;
 using UnityEngine;
-// Action eventleri için gerekli
 
 namespace InteractionSystem.Scripts.Runtime.Player
 {
     /// <summary>
-    /// Handles detecting interactable objects via Raycast and processing player input.
-    /// Supports both Instant and Hold interactions.
+    /// The central brain of the interaction system attached to the Player.
+    /// Uses Raycasting to detect 'IInteractable' objects, manages Input logic (Instant vs Hold), 
+    /// and acts as an Event Publisher (Observer Pattern) to notify the UI system.
     /// </summary>
     public class InteractionDetector : MonoBehaviour
     {
         #region Fields
 
-        [Header("Detection Settings")]
-        [Tooltip("The maximum distance (in units) the player can interact with objects.")]
-        [SerializeField]
+        [Header("Detection Settings")] [SerializeField]
         private float m_InteractionRange = 4.0f;
 
-        [Tooltip("The physics layers that should be checked for interactable objects.")] [SerializeField]
-        private LayerMask m_InteractableLayer;
+        [SerializeField] private LayerMask m_InteractableLayer;
+        [SerializeField] private KeyCode m_InteractionKey = KeyCode.E;
 
-        [Header("Input Settings")] [SerializeField]
-        private KeyCode m_InteractionKey = KeyCode.E;
-
-        // Internal State
         private Camera m_Camera;
         private float m_HoldTimer;
         private IInteractable m_CurrentInteractable;
 
         #endregion
 
-        #region Events
+        #region Events (Observer Pattern)
 
-        /// <summary>
-        /// Fired when an interactable object is found or lost.
-        /// Param 1: IsFound (bool)
-        /// Param 2: Prompt Text (string)
-        /// </summary>
         public event Action<bool, string> OnInteractableFound;
-
-        /// <summary>
-        /// Fired during a hold interaction.
-        /// Param 1: Progress (0.0 to 1.0)
-        /// </summary>
         public event Action<float> OnHoldProgress;
+        public event Action<string, bool> OnInteractionFeedback;
 
         #endregion
 
@@ -53,29 +38,14 @@ namespace InteractionSystem.Scripts.Runtime.Player
         private void Awake()
         {
             m_Camera = Camera.main;
-            if (m_Camera == null)
-            {
-                Debug.LogError("[InteractionDetector] Main Camera not found!");
-            }
+            if (m_Camera == null) Debug.LogError("[InteractionDetector] Main Camera missing!");
         }
 
-        private void Update()
-        {
-            HandleInteractionDetection();
-        }
-
-        private void OnDrawGizmos()
-        {
-            if (m_Camera != null)
-            {
-                Gizmos.color = Color.green;
-                Gizmos.DrawRay(m_Camera.transform.position, m_Camera.transform.forward * m_InteractionRange);
-            }
-        }
+        private void Update() => HandleInteractionDetection();
 
         #endregion
 
-        #region Methods
+        #region Logic
 
         private void HandleInteractionDetection()
         {
@@ -98,21 +68,11 @@ namespace InteractionSystem.Scripts.Runtime.Player
         private void HandleInteractableFound(IInteractable interactable)
         {
             m_CurrentInteractable = interactable;
-
             OnInteractableFound?.Invoke(true, interactable.InteractionPrompt);
 
             float duration = interactable.GetHoldDuration();
-
-            if (duration <= 0f)
-            {
-                // INSTANT INTERACTION
-                HandleInstantInteraction(interactable);
-            }
-            else
-            {
-                // HOLD INTERACTION
-                HandleHoldInteraction(interactable, duration);
-            }
+            if (duration <= 0f) HandleInstantInteraction(interactable);
+            else HandleHoldInteraction(interactable, duration);
         }
 
         private void HandleInteractableLost()
@@ -121,21 +81,14 @@ namespace InteractionSystem.Scripts.Runtime.Player
             {
                 m_CurrentInteractable = null;
                 OnInteractableFound?.Invoke(false, null);
-
-                m_HoldTimer = 0f;
-                OnHoldProgress?.Invoke(0f);
+                ResetHold();
             }
         }
 
         private void HandleInstantInteraction(IInteractable interactable)
         {
-            m_HoldTimer = 0f;
-            OnHoldProgress?.Invoke(0f);
-
-            if (Input.GetKeyDown(m_InteractionKey))
-            {
-                interactable.Interact(gameObject);
-            }
+            ResetHold();
+            if (Input.GetKeyDown(m_InteractionKey)) interactable.Interact(gameObject);
         }
 
         private void HandleHoldInteraction(IInteractable interactable, float duration)
@@ -143,28 +96,26 @@ namespace InteractionSystem.Scripts.Runtime.Player
             if (Input.GetKey(m_InteractionKey))
             {
                 m_HoldTimer += Time.deltaTime;
+                OnHoldProgress?.Invoke(Mathf.Clamp01(m_HoldTimer / duration));
 
-                float progress = Mathf.Clamp01(m_HoldTimer / duration);
-                OnHoldProgress?.Invoke(progress);
-
-                // Check completion
                 if (m_HoldTimer >= duration)
                 {
                     interactable.Interact(gameObject);
+                    ResetHold();
+                }
+            }
+            else if (m_HoldTimer > 0f) ResetHold();
+        }
 
-                    // Reset after successful interaction
-                    m_HoldTimer = 0f;
-                    OnHoldProgress?.Invoke(0f);
-                }
-            }
-            else
-            {
-                if (m_HoldTimer > 0f)
-                {
-                    m_HoldTimer = 0f;
-                    OnHoldProgress?.Invoke(0f);
-                }
-            }
+        private void ResetHold()
+        {
+            m_HoldTimer = 0f;
+            OnHoldProgress?.Invoke(0f);
+        }
+
+        public void ReportFeedback(string message, bool isError = false)
+        {
+            OnInteractionFeedback?.Invoke(message, isError);
         }
 
         #endregion
