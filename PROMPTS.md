@@ -1,56 +1,84 @@
-# InteractionSystem_BurakArslan
+```markdown
+# LLM Kullanım Dokümantasyonu
 
-## Prompt 1: Core System Generation
+> Bu dosya, Ludu Arts Unity Intern Case süresince kullanılan Gemini (Google) etkileşimlerini belgelemektedir.
+
+## Özet
+
+| Bilgi | Değer |
+|-------|-------|
+| Toplam prompt sayısı | 7 Ana Prompt (+ Refactoring) |
+| Kullanılan araçlar | Gemini |
+| En çok yardım alınan konular | Boilerplate Code, DOTween Syntax, Unity Event System |
+| Tahmini LLM ile kazanılan süre | ~3-4 Saat |
+
+---
+
+## Prompt 1: Core System Generation (Temel Sistem)
 
 **Araç:** Gemini
 **Tarih/Saat:** 2026-01-30 15.30
 
 **Prompt:**
-> Hi, I'm working on a Unity Interaction System for a technical case and I need to strictly follow specific coding conventions. Could you help me generate the core scripts?
->
-> I need two scripts:
-> 1. An interface named "IInteractable" (in namespace InteractionSystem.Runtime.Core).
-> 2. A player script named "InteractionDetector" (in namespace InteractionSystem.Runtime.Player).
->
-> Here are the strict requirements (Ludu Arts Standards):
-> - Naming: All private fields must have an "m_" prefix. Serialized fields must be private.
-> - Interface: void Interact(GameObject interactor) method and string InteractionPrompt property.
-> - Conventions: Use #region blocks. Use "== null" for Unity Object checks.
-> - Documentation: Add XML summary comments.
+```text
+Hi, I'm working on a Unity Interaction System for a technical case and I need to strictly follow specific coding conventions. Could you help me generate the core scripts?
+
+I need two scripts:
+1. An interface named "IInteractable" (in namespace InteractionSystem.Runtime.Core).
+2. A player script named "InteractionDetector" (in namespace InteractionSystem.Runtime.Player).
+
+Here are the strict requirements (Ludu Arts Standards):
+- Naming: All private fields must have an "m_" prefix. Serialized fields must be private.
+- Interface: void Interact(GameObject interactor) method and string InteractionPrompt property.
+- Conventions: Use #region blocks. Use "== null" for Unity Object checks.
+- Documentation: Add XML summary comments.
+
+```
 
 **Alınan Cevap (Özet):**
-> IInteractable interface'i ve InteractionDetector scripti Ludu Arts standartlarına (m_ prefix, explicit interface vb.) uygun şekilde oluşturuldu.
+IInteractable arayüzü ve InteractionDetector sınıfı, belirtilen kod standartlarına (naming conventions, regions vb.) uygun olarak oluşturuldu.
 
 **Nasıl Kullandım:**
-- [x] Direkt kullandım
-- [ ] Adapte ettim
-- [ ] Reddettim
+
+* [x] Direkt kullandım
+* [ ] Adapte ettim
+* [ ] Reddettim
 
 **Açıklama:**
-> Temel sistemin iskeletini oluşturmak için kullandım. Kodlar standartlara uygundu.
+Projenin temel iskeletini (Interface ve Detector) hızlıca kurmak ve kod standartlarına baştan itibaren sadık kalmak için kullandım.
 
+---
 
-## Prompt 2: Interactable Objects Logic
+## Prompt 2: Interactable Objects Logic (Etkileşim Objeleri)
 
 **Araç:** Gemini
 **Tarih/Saat:** 2026-01-30 15.40
 
 **Prompt:**
-> Great, the core system is ready. Now I need the "Interactable Objects" implementation.
-> Please generate 3 scripts in the namespace "InteractionSystem.Runtime.Interactables":
-> 1. "InteractableBase" (Abstract Class): Inherits from MonoBehaviour, implements IInteractable explicitly.
-> 2. "SimpleInteractable" (Class): Inherits from Base, destroys on interact.
-> 3. "SwitchInteractable" (Class): Inherits from Base, toggles bool state.
-> STRICT REMINDERS: Use "m_" prefix, #region blocks, and XML Documentation.
+
+```text
+Great, the core system is ready. Now I need the "Interactable Objects" implementation.
+Please generate 3 scripts in the namespace "InteractionSystem.Runtime.Interactables":
+1. "InteractableBase" (Abstract Class): Inherits from MonoBehaviour, implements IInteractable explicitly.
+2. "SimpleInteractable" (Class): Inherits from Base, destroys on interact.
+3. "SwitchInteractable" (Class): Inherits from Base, toggles bool state.
+STRICT REMINDERS: Use "m_" prefix, #region blocks, and XML Documentation.
+
+```
 
 **Alınan Cevap (Özet):**
-> 3 adet script (Base, Simple, Switch) oluşturuldu. Base class interface implementasyonunu yönetirken, türetilen sınıflar sadece OnInteract() metodunu override ediyor. Standartlara uygun.
+Soyut (Abstract) bir temel sınıf ve bundan türeyen iki farklı etkileşim sınıfı oluşturuldu. Explicit Interface Implementation mantığı doğru kuruldu.
 
 **Nasıl Kullandım:**
-- [x] Direkt kullandım
-- [ ] Adapte ettim
-- [ ] Reddettim
 
+* [x] Direkt kullandım
+* [ ] Adapte ettim
+* [ ] Reddettim
+
+**Açıklama:**
+Polimorfik yapıyı kurmak ve kod tekrarını önlemek adına Base Class mantığını yapay zekaya hazırlattım.
+
+---
 
 ## Prompt 3: Simple FPS Controller
 
@@ -58,163 +86,180 @@
 **Tarih/Saat:** 2026-01-30 15.57
 
 **Prompt:**
-> The interaction system is implemented, but I need a way to move the player to test it.
-> Please generate a "SimpleFPSController" script in namespace "InteractionSystem.Runtime.Player".
-> REQUIREMENTS: Inherit from MonoBehaviour, Implement WASD/Mouse Look, Strict Ludu Arts conventions (m_ prefix, #regions), Hide cursor.
+
+```text
+The interaction system is implemented, but I need a way to move the player to test it.
+Please generate a "SimpleFPSController" script in namespace "InteractionSystem.Runtime.Player".
+REQUIREMENTS: Inherit from MonoBehaviour, Implement WASD/Mouse Look, Strict Ludu Arts conventions (m_ prefix, #regions), Hide cursor.
+
+```
 
 **Alınan Cevap (Özet):**
-> CharacterController kullanan, Ludu Arts standartlarına (m_ prefix, private serialized fields) uygun basit bir FPS kontrolcüsü oluşturuldu.
+Test sahnesinde gezinebilmek için CharacterController tabanlı, basit bir FPS kontrolcüsü sağlandı.
 
 **Nasıl Kullandım:**
-- [x] Direkt kullandım
-- [ ] Adapte ettim
-- [ ] Reddettim
 
-## Prompt 4: Complex Interactable Objects
+* [x] Direkt kullandım
+* [ ] Adapte ettim
+* [ ] Reddettim
+
+---
+
+## Prompt 4: Complex Interactable Objects (Karmaşık Objeler)
 
 **Araç:** Gemini
-**Tarih/Saat:** 2026-01-30 15.05
+**Tarih/Saat:** 2026-01-30 16.15
 
 **Prompt:**
-> The basic interactions work perfectly. Now I need the complex interactable objects.
-> Please generate 2 scripts in "InteractionSystem.Runtime.Interactables" and update the Base class.
-> 1. UPDATE "InteractableBase.cs": Add virtual GetHoldDuration().
-> 2. GENERATE "DoorInteractable.cs": Locked/Unlocked logic, requires KeyID.
-> 3. GENERATE "ChestInteractable.cs": Hold logic, changes state/color on open.
-> STRICT CONVENTIONS: m_ prefix, #regions, XML Documentation.
+
+```text
+The basic interactions work perfectly. Now I need the complex interactable objects.
+Please generate 2 scripts in "InteractionSystem.Runtime.Interactables" and update the Base class.
+1. UPDATE "InteractableBase.cs": Add virtual GetHoldDuration().
+2. GENERATE "DoorInteractable.cs": Locked/Unlocked logic, requires KeyID.
+3. GENERATE "ChestInteractable.cs": Hold logic, changes state/color on open.
+STRICT CONVENTIONS: m_ prefix, #regions, XML Documentation.
+
+```
 
 **Alınan Cevap (Özet):**
-> InteractableBase sınıfına GetHoldDuration metodu eklendi. DoorInteractable kilit mekanizmasıyla, ChestInteractable ise görsel geri bildirim (renk değişimi) ile oluşturuldu.
+Base sınıfa "Hold" süresi eklendi. Kilitli kapı ve süreli açılan sandık mantıkları kodlandı.
 
 **Nasıl Kullandım:**
-- [x] Direkt kullandım
-- [ ] Adapte ettim
-- [ ] Reddettim
 
-## Prompt 5: Interaction Detector Upgrade (Hold Logic)
+* [x] Direkt kullandım
+* [ ] Adapte ettim
+* [ ] Reddettim
+
+---
+
+## Prompt 5: Interaction Detector Upgrade (Hold Logic & Events)
 
 **Araç:** Gemini
 **Tarih/Saat:** 2026-01-30 17.26
 
 **Prompt:**
-> The interactable objects are ready, but the "InteractionDetector" currently only supports instant interaction. I need to upgrade it to support "Hold" interactions and Event-based UI updates.
->
-> Please REWRITE the "InteractionDetector" script completely.
->
-> REQUIREMENTS:
-> 1. **Namespace:** InteractionSystem.Runtime.Player
-> 2. **Logic Updates in Update():**
->    - Check Raycast.
->    - If IInteractable found:
->      - Fire event `OnInteractableFound(true, interactable.InteractionPrompt)`.
->      - Check `GetHoldDuration()`.
->      - **If Instant (0):** Use `Input.GetKeyDown` -> Call Interact().
->      - **If Hold (>0):** - Check `Input.GetKey`.
->        - Increase `m_HoldTimer`.
->        - Fire event `OnHoldProgress(m_HoldTimer / duration)`.
->        - If timer >= duration -> Call Interact() and Reset timer.
->        - If key released -> Reset timer.
->    - If Nothing found:
->      - Fire event `OnInteractableFound(false, null)`.
->      - Reset timer.
->
-> 3. **Events:**
->    - `public event Action<bool, string> OnInteractableFound;` (IsFound, PromptText)
->    - `public event Action<float> OnHoldProgress;` (Progress 0.0 to 1.0)
->
-> 4. **Strict Conventions:**
->    - Private fields start with "m_".
->    - Use #region blocks.
->    - Use `UnityEngine.Events` or `System.Action`.
->
-> Please provide the robust, clean C# code.
+
+```text
+The interactable objects are ready, but the "InteractionDetector" currently only supports instant interaction. I need to upgrade it to support "Hold" interactions and Event-based UI updates.
+Please REWRITE the "InteractionDetector" script completely.
+REQUIREMENTS:
+1. Logic Updates: Check GetHoldDuration(), handle Input.GetKey for hold logic, fire OnHoldProgress events.
+2. Events: OnInteractableFound, OnHoldProgress actions.
+3. Strict Conventions: m_ prefix, #region blocks.
+
+```
 
 **Alınan Cevap (Özet):**
-> Event tabanlı ve Hold mantığını içeren InteractionDetector scripti oluşturuldu. Ancak kodda 'GetHoldDuration' metoduna interface üzerinden erişilmeye çalışıldığı için derleme hatası alındı.
+Event tabanlı ve "Basılı Tutma" (Hold) mantığını içeren InteractionDetector scripti oluşturuldu. Ancak AI, interface tanımını güncellemeyi atladı.
 
 **Nasıl Kullandım:**
-- [ ] Direkt kullandım
-- [x] Adapte ettim
-- [ ] Reddettim
 
-**Adaptasyon Detayı:**
-> Yapay zeka 'GetHoldDuration' metodunu InteractableBase sınıfına ekledi ancak IInteractable arayüzüne eklemeyi unuttu. Bu durum InteractionDetector içinde 'Cannot resolve symbol' hatasına yol açtı. IInteractable.cs dosyasını manuel olarak güncelleyip 'float GetHoldDuration();' imzasını ekleyerek sorunu çözdüm.
+* [ ] Direkt kullandım
+* [x] Adapte ettim
+* [ ] Reddettim
 
-## Prompt 6: UI Feedback System with DOTween
+**Yapılan Değişiklikler:**
+Yapay zeka `GetHoldDuration` metodunu Base class'a ekledi ancak `IInteractable` arayüzüne (interface) eklemeyi unuttu. Bu durum derleme hatasına yol açtığı için `IInteractable.cs` dosyasını manuel güncelleyerek `float GetHoldDuration();` imzasını ekledim.
+
+---
+
+## Prompt 6: UI Feedback System (DOTween)
 
 **Araç:** Gemini
 **Tarih/Saat:** 2026-01-30 17.42
 
 **Prompt:**
-> The logic is solid. Now I need the UI Feedback system.
-> Please generate a "InteractionUI" script in "InteractionSystem.Runtime.UI".
-> REQUIREMENTS:
-> 1. References: TextMeshProUGUI, Image (ProgressBar), CanvasGroup.
-> 2. Setup: Listen to InteractionDetector events.
-> 3. DOTween Integration: Fade CanvasGroup in/out.
-> 4. Logic: Show/Hide UI based on events, update fillAmount.
-> STRICT CONVENTIONS: m_ prefix, Explicit null checks.
+
+```text
+The logic is solid. Now I need the UI Feedback system.
+Please generate a "InteractionUI" script in "InteractionSystem.Runtime.UI".
+REQUIREMENTS:
+1. References: TextMeshProUGUI, Image (ProgressBar), CanvasGroup.
+2. Setup: Listen to InteractionDetector events.
+3. DOTween Integration: Fade CanvasGroup in/out.
+4. Logic: Show/Hide UI based on events, update fillAmount.
+STRICT CONVENTIONS: m_ prefix, Explicit null checks.
+
+```
 
 **Alınan Cevap (Özet):**
-> DOTween kütüphanesini kullanan, event tabanlı bir InteractionUI scripti oluşturuldu. CanvasGroup ile Opacity kontrolü ve Image.fillAmount ile progress bar mantığı entegre edildi.
+Observer Pattern kullanarak dedektörü dinleyen ve DOTween kütüphanesi ile animasyonlu (Fade In/Out) geri bildirim veren UI scripti oluşturuldu.
 
 **Nasıl Kullandım:**
-- [x] Direkt kullandım
-- [ ] Adapte ettim
-- [ ] Reddettim
 
-**Açıklama:**
-> Unity tarafında Canvas, Panel ve Image objelerini kurup script referanslarını bağladım.
+* [x] Direkt kullandım
+* [ ] Adapte ettim
+* [ ] Reddettim
 
+---
 
-## Prompt 7: Inventory and Key System
+## Prompt 7: Inventory System
 
 **Araç:** Gemini
 **Tarih/Saat:** 2026-01-30 18.10
 
 **Prompt:**
-> The UI and interactions are great. Now I need a simple Inventory System to handle Keys and unlocking Doors.
-> Please generate/update the following scripts:
-> 1. GENERATE "Inventory.cs" (List<string> keys).
-> 2. GENERATE "KeyInteractable.cs" (Adds key to inventory, destroys self).
-> 3. UPDATE "DoorInteractable.cs" (Check inventory for KeyID before opening).
-> STRICT CONVENTIONS: m_ prefix, Null checks, XML Docs.
+
+```text
+The UI and interactions are great. Now I need a simple Inventory System to handle Keys and unlocking Doors.
+Please generate/update the following scripts:
+1. GENERATE "Inventory.cs" (List<string> keys).
+2. GENERATE "KeyInteractable.cs" (Adds key to inventory, destroys self).
+3. UPDATE "DoorInteractable.cs" (Check inventory for KeyID before opening).
+STRICT CONVENTIONS: m_ prefix, Null checks, XML Docs.
+
+```
 
 **Alınan Cevap (Özet):**
-> Basit bir Inventory sınıfı ve KeyInteractable objesi oluşturuldu. DoorInteractable sınıfı, envanter kontrolü yapacak şekilde güncellendi.
+Basit bir envanter sistemi (String ID tabanlı) kuruldu ve kapı/anahtar etkileşimleri bu sisteme bağlandı.
 
 **Nasıl Kullandım:**
-- [x] Direkt kullandım
-- [ ] Adapte ettim
-- [ ] Reddettim
 
-**Açıklama:**
-> Player objesine Inventory scriptini ekledim ve sahneye "RedKey" ID'li bir anahtar objesi yerleştirdim.
-
+* [x] Direkt kullandım
+* [ ] Adapte ettim
+* [ ] Reddettim
 
 ---
 
-## 🛠️ Phase 2: Manual Refactoring & Optimization (The "Engineering" Polish)
+## 🛠️ Faz 2: Manuel Refactoring & Optimizasyon (Mühendislik Dokunuşu)
 
-**Description:**
-While AI provided the core logic and rapid prototyping, I performed manual refactoring to align the codebase with modern architecture standards (SOLID), improve performance, and ensure scalability.
+> Yapay zeka temel mantığı ve hızlı prototiplemeyi sağlasa da, kod tabanını modern mimari standartlarına (SOLID) uyumlu hale getirmek için aşağıdaki manuel iyileştirmeleri yaptım.
 
-**Key Modifications & Engineering Decisions:**
+**1. Dependency Injection & Mimari Düzeltmesi:**
 
-1.  **Dependency Injection & Architecture Fix:**
-    * *Issue:* AI-generated scripts (e.g., `DoorInteractable`) relied on `FindObjectOfType` to locate the player's Inventory, which is expensive (O(n)) and prone to runtime errors.
-    * *Solution:* I refactored the `IInteractable` interface to include `void Interact(GameObject interactor)`. This allows direct dependency injection of the player reference, eliminating expensive scene traversals.
+* **Sorun:** AI tarafından üretilen kodlar `FindObjectOfType` metodunu kullanıyordu. Bu performans açısından maliyetliydi.
+* **Çözüm:** `Interact` metoduna `GameObject interactor` parametresi ekledim. Böylece objeler oyuncuya ve envantere doğrudan erişebildi.
 
-2.  **Observer Pattern Implementation:**
-    * *Issue:* Tight coupling between Interactable objects and the UI system.
-    * *Solution:* Decoupled the systems. Interactables now report feedback via the `InteractionDetector` events (`OnInteractionFeedback`). The UI listens to these events passively, adhering to the Single Responsibility Principle.
+**2. Observer Pattern (Gelişmiş):**
 
-3.  **UniTask Integration (Async/Await):**
-    * *Issue:* Standard Coroutines generate garbage (GC allocation) and are harder to manage for linear async logic.
-    * *Solution:* Manually integrated `UniTask` into `KeyInteractable` and `SimpleInteractable`. Added "Fake Latency" to simulate backend synchronization. Crucially, I implemented `GetCancellationTokenOnDestroy()` to prevent `MissingReferenceException` if objects are destroyed during async operations.
+* **Çözüm:** Objeler ve UI arasındaki bağı tamamen kopardım (Decoupling). Objeler artık durumu `InteractionDetector` üzerinden bir event (`OnInteractionFeedback`) ile raporluyor.
 
-4.  **Performance Optimization:**
-    * *Caching:* Cached `GetComponent` calls (e.g., Renderer, Inventory) in `Start()` methods to avoid runtime overhead.
-    * *Code Analysis:* Addressed Rider/ReSharper performance warnings, specifically optimizing hot paths in the interaction logic.
+**3. UniTask Entegrasyonu:**
+
+* **Çözüm:** Unity Coroutine'lerinin oluşturduğu Garbage Allocation'ı önlemek için `UniTask` kütüphanesini projeye entegre ettim. `GetCancellationTokenOnDestroy()` kullanarak asenkron işlemlerin güvenliğini sağladım.
 
 ---
+
+## Genel Değerlendirme
+
+### LLM'in En Çok Yardımcı Olduğu Alanlar
+
+1. **Boilerplate Kod Üretimi:** Interface tanımları, #region blokları ve XML yorum satırları gibi zaman alıcı standart yapıları çok hızlı oluşturdu.
+2. **DOTween Syntax:** Animasyon kütüphanesinin syntax'ını hatırlamakla uğraşmadan hızlıca efekt eklememi sağladı.
+3. **Prototipleme:** 12 saatlik süreyi verimli kullanmak adına temel mantığı (Kapı açma, switch vb.) saniyeler içinde kurdu.
+
+### LLM'in Yetersiz Kaldığı Alanlar
+
+1. **Mimari Bütünlük:** Kod parçalarını tek tek doğru yazsa da, Interface'e metod eklemeyi unutmak gibi sistemin bütününü ilgilendiren detayları bazen atladı.
+2. **Performans:** `FindObjectOfType` veya `GetComponent` çağrılarını Update veya sık çalışan metodlar içine koyma eğilimindeydi. Bu kısımları manuel optimize etmem gerekti.
+
+### LLM Kullanımı Hakkında Düşüncelerim
+
+Bu case çalışmasında LLM, bir "Kod Yazarı"ndan ziyade bir "Asistan" olarak rol aldı. Temel angarya işleri ona yaptırarak, ben daha çok mimari kararlara, optimizasyona ve kodun genel kalitesine (Refactoring) odaklanabildim. LLM olmasaydı bu standartlarda bir projeyi bu sürede bitirmek çok daha zor olurdu.
+
+---
+
+```
+
+```

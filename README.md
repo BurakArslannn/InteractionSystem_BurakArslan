@@ -1,67 +1,249 @@
-# InteractionSystem_BurakArslan
+```markdown
+# Interaction System - Burak Arslan
 
+> Ludu Arts Unity Developer Intern Case
 
-# Unity Interaction System
+## Proje Bilgileri
 
-A modular, scalable, and optimized Interaction System developed in Unity. This project demonstrates modern C# practices, SOLID principles, and asynchronous programming patterns.
-
-## 🎮 Key Features
-
-- **Raycast-Based Detection:** Precise object detection from the player's camera.
-- **Multiple Interaction Types:**
-  - **Instant:** Switches, Levers, Simple Collectibles.
-  - **Hold:** Chests (Long press logic with visual feedback).
-  - **Locked:** Doors requiring specific keys from the inventory.
-- **Inventory System:** Logic to collect items and use them to unlock gated content.
-- **Visual Feedback (UI):** Smooth HUD updates using **DOTween** (Fade In/Out, Progress Bars, Shake Effects).
-
-## 🏗️ Technical Architecture & Design Patterns
-
-### 1. SOLID Principles
-- **Single Responsibility Principle (SRP):** - `InteractionDetector` handles only input and detection.
-  - `InteractionUI` handles only visualization.
-  - Interactable objects handle only their internal state.
-- **Open/Closed Principle (OCP):** New interactable types (e.g., *Lever*, *NPC*) can be added by extending `InteractableBase` without modifying the core system.
-- **Interface Segregation:** The system relies on `IInteractable` interface, decoupling the detector from concrete implementations.
-
-### 2. Design Patterns
-- **Observer Pattern:** The UI system is completely decoupled from the logic. `InteractionUI` listens to events (`OnInteractableFound`, `OnInteractionFeedback`) from the Detector.
-- **Dependency Injection (Method Injection):** The interacting actor (`interactor`) is passed to the `OnInteract` method, allowing objects to access the player's systems (Inventory, Detector) without heavy `FindObjectOfType` calls.
-
-### 3. Optimization & Performance
-- **UniTask Integration:** Used `UniTask` instead of Coroutines for asynchronous operations (e.g., pickup delays, backend sync simulation) to prevent Garbage Collection (GC) allocation.
-- **Caching:** Components like `Renderer` or `Inventory` are cached or accessed directly via reference to avoid expensive calls like `GetComponent` or `FindObjectOfType` during runtime.
-- **Event-Based Updates:** UI updates are event-driven, not polled in `Update()`.
-
-## 📦 Third-Party Libraries
-
-- **DOTween:** Used for high-performance UI animations (Fade, Shake, Punch).
-- **UniTask:** Used for zero-allocation async/await operations.
-
-## 🚀 How to Test
-
-1. Clone the repository.
-2. Open the **TestScene**.
-3. Press **Play**.
-   - Look at the **Door** -> Try to open (Locked).
-   - Find the **Red Key** -> Pick it up (E).
-   - Go back to **Door** -> Unlock and Open.
-   - Go to **Chest** -> Hold 'E' for 3 seconds to open.
+| Bilgi | Değer |
+|-------|-------|
+| Unity Versiyonu | 6000.0.23f1 |
+| Render Pipeline | URP |
+| Case Süresi | ~12 Saat |
+| Tamamlanma Oranı | %100 |
 
 ---
-*Developed by Burak Arslan as a showcase of Interaction System Architecture.*
+
+## Kurulum
+
+1. Repository'yi klonlayın:
+```bash
+git clone https://github.com/BurakArslannn/InteractionSystem_BurakArslan.git
+```
+
+2. Unity Hub'da projeyi açın.
+3. `Assets/InteractionSystem_Burak/Scenes/TestScene.unity` sahnesini açın.
+4. Play tuşuna basın.
+
+---
+
+## Nasıl Test Edilir
+
+### Kontroller
+
+| Tuş | Aksiyon |
+| --- | --- |
+| WASD | Karakter Hareketi |
+| Mouse | Kamera Bakış Yönü |
+| E | Etkileşim (Bas-Çek veya Basılı Tut) |
+| ESC | Çıkış |
+
+### Test Senaryoları
+
+1. **Door Test (Kilitli Değil):**
+* Kapıya yaklaşın, ekranda "Interact" mesajını ve DOTween animasyonunu görün.
+* 'E' tuşuna basın, kapının açıldığını doğrulayın.
 
 
-## 🔮 Future Improvements & Roadmap
+2. **Key + Locked Door Test:**
+* Kilitli kapıya (Locked) yaklaşın, etkileşime girmeye çalışın.
+* UI üzerinde **"Requires Key: RedKey"** hatasını ve titreme (Shake) efektini görün.
+* Yerdeki kırmızı anahtarı (SimpleInteractable/Key) bulun ve 'E' ile toplayın.
+* UI üzerinde **"Picked up: RedKey"** mesajını görün.
+* Kapıya dönün ve açın.
 
-While the current system is robust for functionality demonstration, the following architectural improvements are planned for a production-ready release:
 
-1.  **ScriptableObject Integration for Item Data:**
-    * *Current:* Keys and Doors interact via string-based IDs (e.g., "RedKey").
-    * *Planned:* Replace strings with `ItemDataSO` (ScriptableObjects). This would eliminate typo risks and allow attaching metadata (Icons, Descriptions) to items directly in the Inspector.
+3. **Switch Test:**
+* Switch nesnesine yaklaşın ve basın.
+* UI üzerinde durumun "Switch ON/OFF" olarak değiştiğini gözlemleyin.
 
-2.  **Object Pooling:**
-    * Instead of `Destroy(gameObject)` when picking up keys, an Object Pool system could be implemented to reuse objects, further optimizing memory allocation in scenes with hundreds of collectables.
 
-3.  **Input System (New):**
-    * Migrate from the legacy `Input.GetKeyDown` to Unity's new **Input System Package** for better cross-platform support (Gamepad/Console).
+4. **Chest Test (Hold Interaction):**
+* Sandığa yaklaşın.
+* 'E' tuşuna **basılı tutun**.
+* Progress Bar'ın (Yuvarlak bar) dolduğunu ve dolunca sandığın açıldığını (Renginin değiştiğini) görün.
+
+
+
+---
+
+## Mimari Kararlar
+
+### Interaction System Yapısı
+
+Sistem, **SOLID** prensipleri gözetilerek modüler bir yapıda kurulmuştur.
+
+* **Core:** `IInteractable` arayüzü tüm etkileşimlerin temelini oluşturur.
+* **Player:** `InteractionDetector` sadece raycast ve input dinler (SRP).
+* **UI:** `InteractionUI`, Observer Pattern ile dedektörden gelen eventleri dinler.
+* **Interactables:** `Door`, `Chest`, `Key` gibi nesneler `InteractableBase` sınıfından türetilmiştir.
+
+**Neden bu yapıyı seçtim:**
+
+> Projenin genişletilebilir olması (Scalability) önceliğimdi. Yeni bir etkileşim türü (örn: Lever, NPC) eklenmek istendiğinde, mevcut `InteractionDetector` veya `UI` kodlarında değişiklik yapılmasına gerek yoktur (Open/Closed Principle).
+
+**Alternatifler:**
+
+> Monolithic (Tek parça) bir "PlayerController" içinde tüm `if(hit.tag == "Door")` mantığını yazmak.
+
+**Neden seçmedim:**
+
+> Bu yaklaşım, proje büyüdükçe yönetilemez (Spaghetti Code) hale gelirdi ve SOLID prensiplerine aykırı olurdu.
+
+**Trade-off'lar:**
+
+> Event-based ve Interface-based yapı, başlangıçta kurulum maliyeti (boilerplate code) yaratır ancak uzun vadede bakım maliyetini düşürür.
+
+### Kullanılan Design Patterns
+
+| Pattern | Kullanım Yeri | Neden |
+| --- | --- | --- |
+| **Observer Pattern** | `InteractionDetector` -> `InteractionUI` | UI ve Logic sistemlerini birbirinden tamamen ayırmak (Decoupling) için. |
+| **Dependency Injection** | `OnInteract(GameObject interactor)` | Objelerin, oyuncu üzerindeki sistemlere (Inventory) `FindObjectOfType` kullanmadan erişebilmesi için. |
+| **Template Method** | `InteractableBase` | Ortak mantığı (Feedback gönderme vb.) base class'ta tutup, özel mantığı türetilmiş sınıflara bırakmak için. |
+
+---
+
+## Ludu Arts Standartlarına Uyum
+
+### C# Coding Conventions
+
+| Kural | Uygulandı | Notlar |
+| --- | --- | --- |
+| m_ prefix (private fields) | [x] | Tüm private değişkenlerde uygulandı. |
+| s_ prefix (private static) | [x] | (Projede static field ihtiyacı olmadı) |
+| k_ prefix (private const) | [x] |  |
+| Region kullanımı | [x] | Fields, Methods, Unity Methods olarak ayrıldı. |
+| Region sırası doğru | [x] |  |
+| XML documentation | [x] | Tüm class ve kritik metodlara eklendi. |
+| Silent bypass yok | [x] | TryGetComponent kullanıldı. |
+| Explicit interface impl. | [x] | `IInteractable.Interact` explicit uygulandı. |
+
+### Naming Convention
+
+| Kural | Uygulandı | Örnekler |
+| --- | --- | --- |
+| P_ prefix (Prefab) | [x] | P_DoorInteractable, P_Chest, P_Player |
+| M_ prefix (Material) | [x] | M_Red, M_Green, M_Chest |
+| T_ prefix (Texture) | [ ] | (Texture asset kullanılmadı) |
+| SO isimlendirme | [ ] | (ScriptableObject kullanılmadı - *Bkz. Limitasyonlar*) |
+
+### Prefab Kuralları
+
+| Kural | Uygulandı | Notlar |
+| --- | --- | --- |
+| Transform (0,0,0) | [x] |  |
+| Pivot bottom-center | [x] |  |
+| Collider tercihi | [x] | Performans için Box Collider tercih edildi. |
+| Hierarchy yapısı | [x] | Container -> Visuals/Colliders yapısı. |
+
+### Zorlandığım Noktalar
+
+> Event-based UI sistemini DOTween animasyonları ile senkronize ederken (Feedback animasyonu oynarken yeni interaction gelmesi durumu) state yönetimine dikkat etmem gerekti.
+
+---
+
+## Tamamlanan Özellikler
+
+### Zorunlu (Must Have)
+
+* [x] Core Interaction System
+* [x] IInteractable interface
+* [x] InteractionDetector
+* [x] Range kontrolü
+
+
+* [x] Interaction Types
+* [x] Instant (Switch, Key)
+* [x] Hold (Chest)
+* [x] Toggle (Door)
+
+
+* [x] Interactable Objects
+* [x] Door (locked/unlocked)
+* [x] Key Pickup
+* [x] Switch/Lever
+* [x] Chest/Container
+
+
+* [x] UI Feedback
+* [x] Interaction prompt (Dinamik Text)
+* [x] Dynamic text (DOTween)
+* [x] Hold progress bar
+* [x] Cannot interact feedback (Locked uyarısı)
+
+
+* [x] Simple Inventory
+* [x] Key toplama
+* [x] Envanter kontrolü
+
+
+
+### Bonus (Nice to Have) / Ekstra Özellikler
+
+* [x] **UniTask Integration:** Unity Coroutine yerine allocation-free async/await yapısı kullanıldı.
+* [x] **DOTween Animations:** UI geçişleri, Shake efektleri ve Punch efektleri eklendi.
+* [x] **Optimization:** `FindObjectOfType` kullanımları kaldırılarak Dependency Injection ve Caching mekanizmaları kuruldu.
+
+---
+
+## Bilinen Limitasyonlar & Roadmap
+
+### İyileştirme Önerileri (Future Roadmap)
+
+1. **ScriptableObject Entegrasyonu:**
+* *Mevcut:* Anahtar ve Kapı eşleşmesi `string m_KeyID` ("RedKey") üzerinden yapılıyor.
+* *Öneri:* `ItemDataSO` (ScriptableObject) kullanılarak Tip Güvenliği (Type Safety) sağlanabilir ve item ikonları eklenebilir.
+
+
+2. **Input System Package:**
+* *Mevcut:* `Input.GetKeyDown` (Legacy) kullanıldı.
+* *Öneri:* Cross-platform destek için New Input System paketine geçilebilir.
+
+
+3. **Object Pooling:**
+* *Öneri:* Çok sayıda toplanabilir eşya (Coin vb.) olması durumunda Instantiate/Destroy yerine Object Pool kullanılmalıdır.
+
+
+
+---
+
+## Dosya Yapısı
+
+```
+Assets/
+├── InteractionSystem_Burak/
+│   ├── Scripts/
+│   │   ├── Runtime/
+│   │   │   ├── Core/         (Interfaces)
+│   │   │   ├── Interactables/ (Door, Chest, Key logic)
+│   │   │   ├── Player/       (Detector, Inventory)
+│   │   │   └── UI/           (Feedback logic)
+│   ├── Prefabs/              (P_DoorInteractable, P_Key, etc.)
+│   ├── Materials/            (M_Red, M_Green, etc.)
+│   └── Scenes/
+│       └── TestScene.unity
+├── README.md
+├── PROMPTS.md
+└── .gitignore
+
+```
+
+---
+
+## İletişim
+
+| Bilgi | Değer |
+| --- | --- |
+| Ad Soyad | Burak Arslan |
+| E-posta | burakarslandev0@gmail.com |
+| LinkedIn | https://www.linkedin.com/in/burakarslannn
+| GitHub | https://github.com/BurakArslannn |
+
+---
+
+*Bu proje Ludu Arts Unity Developer Intern Case için hazırlanmıştır.*
+
+```
+
+```
