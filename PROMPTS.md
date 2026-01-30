@@ -69,3 +69,24 @@
 - [x] Direkt kullandım
 - [ ] Adapte ettim
 - [ ] Reddettim
+
+## Prompt 4: Complex Interactable Objects
+
+**Araç:** Gemini
+**Tarih/Saat:** 2026-01-30 15.05
+
+**Prompt:**
+> The basic interactions work perfectly. Now I need the complex interactable objects.
+> Please generate 2 scripts in "InteractionSystem.Runtime.Interactables" and update the Base class.
+> 1. UPDATE "InteractableBase.cs": Add virtual GetHoldDuration().
+> 2. GENERATE "DoorInteractable.cs": Locked/Unlocked logic, requires KeyID.
+> 3. GENERATE "ChestInteractable.cs": Hold logic, changes state/color on open.
+> STRICT CONVENTIONS: m_ prefix, #regions, XML Documentation.
+
+**Alınan Cevap (Özet):**
+> InteractableBase sınıfına GetHoldDuration metodu eklendi. DoorInteractable kilit mekanizmasıyla, ChestInteractable ise görsel geri bildirim (renk değişimi) ile oluşturuldu.
+
+**Nasıl Kullandım:**
+- [x] Direkt kullandım
+- [ ] Adapte ettim
+- [ ] Reddettim

@@ -41,6 +41,16 @@ namespace InteractionSystem.Scripts.Runtime.Interactables
         #region Methods
 
         /// <summary>
+        /// Returns the duration required to hold the interaction key.
+        /// Default is 0 (Instant interaction). Override this for Hold interactions.
+        /// </summary>
+        /// <returns>Duration in seconds.</returns>
+        public virtual float GetHoldDuration()
+        {
+            return 0f;
+        }
+
+        /// <summary>
         /// Called when the player interacts with this object.
         /// Must be implemented by derived classes.
         /// </summary>

@@ -8,14 +8,18 @@ namespace InteractionSystem.Scripts.Runtime.Core
     public interface IInteractable
     {
         /// <summary>
-        /// Gets the prompt text to be displayed on the UI (e.g., "Press E to Open").
+        /// Gets the prompt text to be displayed on the UI.
         /// </summary>
         string InteractionPrompt { get; }
 
         /// <summary>
+        /// Gets the hold duration required for interaction (0 for instant).
+        /// </summary>
+        float GetHoldDuration(); // <--- BU SATIRI EKLEDİK
+
+        /// <summary>
         /// Triggered when the player performs an interaction.
         /// </summary>
-        /// <param name="interactor">The GameObject that initiated the interaction.</param>
         void Interact(GameObject interactor);
     }
 }
