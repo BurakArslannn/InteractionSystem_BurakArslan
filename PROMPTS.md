@@ -90,3 +90,78 @@
 - [x] Direkt kullandım
 - [ ] Adapte ettim
 - [ ] Reddettim
+
+## Prompt 5: Interaction Detector Upgrade (Hold Logic)
+
+**Araç:** Gemini
+**Tarih/Saat:** 2026-01-30 17.26
+
+**Prompt:**
+> The interactable objects are ready, but the "InteractionDetector" currently only supports instant interaction. I need to upgrade it to support "Hold" interactions and Event-based UI updates.
+>
+> Please REWRITE the "InteractionDetector" script completely.
+>
+> REQUIREMENTS:
+> 1. **Namespace:** InteractionSystem.Runtime.Player
+> 2. **Logic Updates in Update():**
+>    - Check Raycast.
+>    - If IInteractable found:
+>      - Fire event `OnInteractableFound(true, interactable.InteractionPrompt)`.
+>      - Check `GetHoldDuration()`.
+>      - **If Instant (0):** Use `Input.GetKeyDown` -> Call Interact().
+>      - **If Hold (>0):** - Check `Input.GetKey`.
+>        - Increase `m_HoldTimer`.
+>        - Fire event `OnHoldProgress(m_HoldTimer / duration)`.
+>        - If timer >= duration -> Call Interact() and Reset timer.
+>        - If key released -> Reset timer.
+>    - If Nothing found:
+>      - Fire event `OnInteractableFound(false, null)`.
+>      - Reset timer.
+>
+> 3. **Events:**
+>    - `public event Action<bool, string> OnInteractableFound;` (IsFound, PromptText)
+>    - `public event Action<float> OnHoldProgress;` (Progress 0.0 to 1.0)
+>
+> 4. **Strict Conventions:**
+>    - Private fields start with "m_".
+>    - Use #region blocks.
+>    - Use `UnityEngine.Events` or `System.Action`.
+>
+> Please provide the robust, clean C# code.
+
+**Alınan Cevap (Özet):**
+> Event tabanlı ve Hold mantığını içeren InteractionDetector scripti oluşturuldu. Ancak kodda 'GetHoldDuration' metoduna interface üzerinden erişilmeye çalışıldığı için derleme hatası alındı.
+
+**Nasıl Kullandım:**
+- [ ] Direkt kullandım
+- [x] Adapte ettim
+- [ ] Reddettim
+
+**Adaptasyon Detayı:**
+> Yapay zeka 'GetHoldDuration' metodunu InteractableBase sınıfına ekledi ancak IInteractable arayüzüne eklemeyi unuttu. Bu durum InteractionDetector içinde 'Cannot resolve symbol' hatasına yol açtı. IInteractable.cs dosyasını manuel olarak güncelleyip 'float GetHoldDuration();' imzasını ekleyerek sorunu çözdüm.
+
+## Prompt 6: UI Feedback System with DOTween
+
+**Araç:** Gemini
+**Tarih/Saat:** 2026-01-30 17.42
+
+**Prompt:**
+> The logic is solid. Now I need the UI Feedback system.
+> Please generate a "InteractionUI" script in "InteractionSystem.Runtime.UI".
+> REQUIREMENTS:
+> 1. References: TextMeshProUGUI, Image (ProgressBar), CanvasGroup.
+> 2. Setup: Listen to InteractionDetector events.
+> 3. DOTween Integration: Fade CanvasGroup in/out.
+> 4. Logic: Show/Hide UI based on events, update fillAmount.
+> STRICT CONVENTIONS: m_ prefix, Explicit null checks.
+
+**Alınan Cevap (Özet):**
+> DOTween kütüphanesini kullanan, event tabanlı bir InteractionUI scripti oluşturuldu. CanvasGroup ile Opacity kontrolü ve Image.fillAmount ile progress bar mantığı entegre edildi.
+
+**Nasıl Kullandım:**
+- [x] Direkt kullandım
+- [ ] Adapte ettim
+- [ ] Reddettim
+
+**Açıklama:**
+> Unity tarafında Canvas, Panel ve Image objelerini kurup script referanslarını bağladım.
