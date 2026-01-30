@@ -165,3 +165,28 @@
 
 **Açıklama:**
 > Unity tarafında Canvas, Panel ve Image objelerini kurup script referanslarını bağladım.
+
+
+## Prompt 7: Inventory and Key System
+
+**Araç:** Gemini
+**Tarih/Saat:** 2026-01-30 18.10
+
+**Prompt:**
+> The UI and interactions are great. Now I need a simple Inventory System to handle Keys and unlocking Doors.
+> Please generate/update the following scripts:
+> 1. GENERATE "Inventory.cs" (List<string> keys).
+> 2. GENERATE "KeyInteractable.cs" (Adds key to inventory, destroys self).
+> 3. UPDATE "DoorInteractable.cs" (Check inventory for KeyID before opening).
+> STRICT CONVENTIONS: m_ prefix, Null checks, XML Docs.
+
+**Alınan Cevap (Özet):**
+> Basit bir Inventory sınıfı ve KeyInteractable objesi oluşturuldu. DoorInteractable sınıfı, envanter kontrolü yapacak şekilde güncellendi.
+
+**Nasıl Kullandım:**
+- [x] Direkt kullandım
+- [ ] Adapte ettim
+- [ ] Reddettim
+
+**Açıklama:**
+> Player objesine Inventory scriptini ekledim ve sahneye "RedKey" ID'li bir anahtar objesi yerleştirdim.

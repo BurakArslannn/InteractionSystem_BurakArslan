@@ -1,9 +1,12 @@
+using InteractionSystem.Scripts.Runtime.Player;
 using UnityEngine;
+
+// Inventory erişimi için
 
 namespace InteractionSystem.Scripts.Runtime.Interactables
 {
     /// <summary>
-    /// Represents a door that can be locked or unlocked.
+    /// Represents a door that can be locked or unlocked using keys from Inventory.
     /// </summary>
     public class DoorInteractable : InteractableBase
     {
@@ -24,14 +27,35 @@ namespace InteractionSystem.Scripts.Runtime.Interactables
 
         protected override void OnInteract()
         {
-            // Check lock state
+            // 1. Check Lock State
             if (m_IsLocked)
             {
-                Debug.Log($"[Door] Access Denied. Requires Key: {m_KeyID}");
-                return;
-            }
+                // Try to find inventory
+                var inventory = FindObjectOfType<Inventory>();
 
-            // Toggle open state
+                if (inventory != null && inventory.HasKey(m_KeyID))
+                {
+                    // Has Key -> Unlock and Open
+                    m_IsLocked = false;
+                    Debug.Log($"[Door] Unlocked using key: {m_KeyID}");
+
+                    ToggleDoor();
+                }
+                else
+                {
+                    // No Key -> Access Denied
+                    Debug.Log($"[Door] Access Denied. Requires Key: {m_KeyID}");
+                }
+            }
+            else
+            {
+                // 2. Already Unlocked -> Just Toggle
+                ToggleDoor();
+            }
+        }
+
+        private void ToggleDoor()
+        {
             m_IsOpen = !m_IsOpen;
 
             // Visual feedback: Rotate 90 degrees
@@ -43,15 +67,14 @@ namespace InteractionSystem.Scripts.Runtime.Interactables
         }
 
         /// <summary>
-        /// Attempts to unlock the door with a given key ID.
+        /// Force unlock (for debug or event usage).
         /// </summary>
-        /// <param name="keyID">The ID of the key used.</param>
         public void Unlock(string keyID)
         {
             if (m_IsLocked && m_KeyID == keyID)
             {
                 m_IsLocked = false;
-                Debug.Log($"[Door] Unlocked with {keyID}");
+                Debug.Log($"[Door] Unlocked via method with {keyID}");
             }
         }
 

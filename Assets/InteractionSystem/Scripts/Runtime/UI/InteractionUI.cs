@@ -39,7 +39,6 @@ namespace InteractionSystem.Scripts.Runtime.UI
 
         private void Start()
         {
-            // Auto-find detector if not assigned
             if (m_Detector == null)
             {
                 m_Detector = FindObjectOfType<InteractionDetector>();
@@ -50,11 +49,9 @@ namespace InteractionSystem.Scripts.Runtime.UI
                 }
             }
 
-            // Subscribe to events
             m_Detector.OnInteractableFound += HandleInteractableFound;
             m_Detector.OnHoldProgress += HandleHoldProgress;
 
-            // Initialize UI state (Hidden)
             if (m_CanvasGroup != null)
             {
                 m_CanvasGroup.alpha = 0f;
@@ -68,7 +65,6 @@ namespace InteractionSystem.Scripts.Runtime.UI
 
         private void OnDestroy()
         {
-            // Unsubscribe to prevent memory leaks
             if (m_Detector != null)
             {
                 m_Detector.OnInteractableFound -= HandleInteractableFound;
@@ -84,19 +80,16 @@ namespace InteractionSystem.Scripts.Runtime.UI
         {
             if (m_CanvasGroup == null) return;
 
-            // Kill any active tweens on this object to prevent conflicts
             m_CanvasGroup.DOKill();
 
             if (isFound)
             {
                 if (m_PromptText != null) m_PromptText.text = promptText;
 
-                // Fade In
                 m_CanvasGroup.DOFade(1f, 0.2f);
             }
             else
             {
-                // Fade Out
                 m_CanvasGroup.DOFade(0f, 0.2f);
             }
         }
